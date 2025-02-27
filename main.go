@@ -26,7 +26,6 @@ func main() {
 	fmt.Println("Bob's Pending Requests:", u2.PendingRequests)
 	fmt.Println("Alice's Pending Requests:", u1.PendingRequests)
 
-	//u2.DeclineRequest(1)
 	u2.AcceptRequest(1)
 
 	fmt.Println("see list", u2.FetchconnectionList())

@@ -13,6 +13,8 @@ type User struct {
 	Profile         *UserProfessionalInfo
 	Connections     map[int]*User
 	PendingRequests map[int]*User
+	Inbox           map[int][]*Message
+	SentMessages    map[int][]*Message
 }
 
 // type Connections struct {
@@ -139,4 +141,55 @@ func (u *User) FetchconnectionList() []*User {
 
 	return users
 
+}
+
+func (u *User) SendMessage(id, recID int, content string) error {
+	if u.ID == recID {
+		return fmt.Errorf("cant send message to self")
+	}
+
+	_, exists := u.Connections[recID]
+	if !exists {
+		return fmt.Errorf("receiver is not a connection")
+	}
+
+	message := NewMessage(id, u.ID, recID, content)
+
+	u.SentMessages[recID] = append(u.SentMessages[recID], message)
+	u.Inbox[recID] = append(u.Inbox[recID], message)
+	return nil
+}
+
+func (u *User) ViewInbox() error {
+	if len(u.Inbox) == 0 {
+		return fmt.Errorf("inbox is empty")
+	}
+
+	for key, val := range u.Inbox {
+		fmt.Printf("\n📨 Messages from User ID %d:\n", key)
+		for _, j := range val {
+			fmt.Printf("message content is: %s\n", j.Content)
+		}
+	}
+	return nil
+}
+
+func (u *User) ViewSentMessage() error {
+	if len(u.SentMessages) == 0 {
+		return fmt.Errorf("user hasnt sent any message to their connection")
+	}
+
+	for key, val := range u.SentMessages {
+		fmt.Printf("\n📨 Messages from User ID %d:\n", key)
+		for _, j := range val {
+			fmt.Printf("message content is: %s\n", j.Content)
+		}
+	}
+	return nil
+
+}
+
+func (u *User) ApplyJob(jobid int) {
+
+	fmt.Println(" applied for the job")
 }
